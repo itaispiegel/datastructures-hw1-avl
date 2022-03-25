@@ -79,7 +79,6 @@ class AVLNode(object):
 
     def setLeft(self, node):
         self.left = node
-        return None
 
     """sets right child
 
@@ -89,7 +88,6 @@ class AVLNode(object):
 
     def setRight(self, node):
         self.right = node
-        return None
 
     """sets parent
 
@@ -99,7 +97,6 @@ class AVLNode(object):
 
     def setParent(self, node):
         self.parent = node
-        return None
 
     """sets value
 
@@ -109,7 +106,6 @@ class AVLNode(object):
 
     def setValue(self, value):
         self.value = value
-        return None
 
     """sets the balance factor of the node
 
@@ -119,7 +115,6 @@ class AVLNode(object):
 
     def setHeight(self, h):
         self.height = h
-        return None
 
     """returns whether self is not a virtual node
 
@@ -128,9 +123,7 @@ class AVLNode(object):
     """
 
     def isRealNode(self):
-        if self.left != None:
-            return True
-        return False
+        return self.height != -1
 
 
 """
@@ -155,9 +148,7 @@ class AVLTreeList(object):
     """
 
     def empty(self):
-        if self.root.isRealNode():
-            return False
-        return True
+       return not self.root.isRealNode()
 
     """retrieves the value of the i'th item in the list
 
@@ -169,11 +160,10 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        if i > self.root.rank:
-            return None
-        i += 1
-        node = self.getIth(i)
-        return node.value
+        if i < self.root.rank:
+            node = self.getIth(i + 1)
+            return node.value
+        return None
 
     """inserts val at position i in the list
 
@@ -191,7 +181,7 @@ class AVLTreeList(object):
             self.root = self.newNode(None, val)
             return 0
         i += 1
-        if i <= self.length():
+        elif i <= self.length():
             node = self.getIth(i)
             if node.left.isRealNode() == 0:
                 node.left = self.newNode(node, val)
@@ -203,7 +193,6 @@ class AVLTreeList(object):
             fixes = self.fixup(node)
             return fixes
         elif i == self.length() + 1:
-            print(i)
             node = self.getIth(i - 1)
             node.right = self.newNode(node, val)
             fixes = self.fixup(node)
@@ -273,7 +262,7 @@ class AVLTreeList(object):
     def last(self):
         node = self.root
         while node.right.isRealNode():
-            node = node.left
+            node = node.right
         return node.value
 
     """returns an array representing list
@@ -302,8 +291,6 @@ class AVLTreeList(object):
     """
 
     def length(self):
-        if self.empty():
-            return 0
         return self.root.rank
 
     """splits the list at the i'th index
@@ -393,15 +380,14 @@ class AVLTreeList(object):
     def getIth(self, i):
         node = self.root
         if i > node.rank:
-            raise ValueError("index out of range")
-        while True:
+            raise IndexError("index out of range")
+        while node.left.rank != i - 1:
             if node.left.rank >= i:
                 node = node.left
-            elif node.left.rank == i - 1:
-                return node
             else:
                 i -= node.left.rank + 1
                 node = node.right
+        return node
 
     """returns the predecessor node
     @rtype: AVLNode
@@ -415,7 +401,6 @@ class AVLTreeList(object):
                 node = node.right
             return node
         else:
-
             while node.parent != None and self.isParentRight(node) == 1:
                 node = node.parent
             return node.parent
@@ -519,11 +504,7 @@ class AVLTreeList(object):
     """
 
     def isParentRight(self, node):
-        if node.parent != None:
-            if node == node.parent.left:
-                return True
-            return False
-        return None
+        return node.parent is not None and node.parent.left == node
 
 
 def randomTree(ops):
