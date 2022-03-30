@@ -143,6 +143,16 @@ class AVLNode(object):
         """
         return not self.isRealNode()
 
+    def update(self):
+        """
+        Update the node's fields from its children.
+
+        @rtype: node
+        @returns: None
+        """
+        self.rank = self.left.rank + 1 + self.right.rank
+        self.height = max(self.left.height, self.right.height) + 1
+
     @property
     def balanceFactor(self):
         """
@@ -468,10 +478,8 @@ class AVLTreeList(object):
         A.parent = par
         l = gLeft(node)
         l.parent = node
-        node.rank = node.left.rank + node.right.rank + 1
-        node.height = max(node.left.height, node.right.height) + 1
-        A.rank = A.left.rank + A.right.rank + 1
-        A.height = max(A.left.height, A.right.height) + 1
+        node.update()
+        A.update()
 
     def fixup(self, node):
         """
@@ -483,8 +491,7 @@ class AVLTreeList(object):
         """
         fixes = 0
         while node is not None:
-            node.height = max(node.left.height, node.right.height) + 1
-            node.rank = node.left.rank + node.right.rank + 1
+            node.update()
             if node.balanceFactor == 2:
                 if node.left.left.height - node.left.right.height == 1:
                     self.rotate(node, 1)
