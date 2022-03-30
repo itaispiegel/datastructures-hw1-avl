@@ -116,14 +116,23 @@ class AVLNode(object):
     def setHeight(self, h):
         self.height = h
 
-    """returns whether self is not a virtual node
+    """returns whether self is a real node
 
     @rtype: bool
-    @returns: False if self is a virtual node, True otherwise.
+    @returns: True iff self is a real node.
     """
 
     def isRealNode(self):
         return self.height != -1
+
+    """returns whether self is a virtual node
+
+    @rtype: bool
+    @returns: True iff self is a virtual node.
+    """
+
+    def isVirtualNode(self):
+        return not self.isRealNode()
 
 
 """
@@ -148,7 +157,7 @@ class AVLTreeList(object):
     """
 
     def empty(self):
-       return not self.root.isRealNode()
+        return self.root.isVirtualNode()
 
     """retrieves the value of the i'th item in the list
 
@@ -182,7 +191,7 @@ class AVLTreeList(object):
             return 0
         elif i + 1 <= self.length():
             node = self.getIth(i + 1)
-            if node.left.isRealNode() == 0:
+            if node.left.isVirtualNode():
                 node.left = self.newNode(node, val)
                 node = node.left
             else:
@@ -213,12 +222,12 @@ class AVLTreeList(object):
             return -1
         node = self.getIth(i + 1)
         if self.root == node:
-            if node.left.isRealNode() == 0:
+            if node.left.isVirtualNode():
                 self.root = node.right
                 self.root.parent = None
                 return 0
 
-            if node.left.isRealNode() == 0:
+            if node.left.isVirtualNode():
                 node.right.parent = node.parent
                 if node == self.root:
                     self.root = node.right
@@ -275,7 +284,7 @@ class AVLTreeList(object):
         return arr
 
     def listToArrayRec(self, node):
-        if node.isRealNode() == 0:
+        if node.isVirtualNode():
             return []
         arr = self.listToArrayRec(node.left)
         arr.append(node.value)
@@ -400,7 +409,7 @@ class AVLTreeList(object):
                 node = node.right
             return node
         else:
-            while node.parent != None and self.isParentRight(node) == 1:
+            while node.parent is not None and self.isParentRight(node):
                 node = node.parent
             return node.parent
 
@@ -473,7 +482,7 @@ class AVLTreeList(object):
 
     def fixup(self, node):
         fixes = 0
-        while node != None:
+        while node is not None:
             node.height = max(node.left.height, node.right.height) + 1
             node.rank = node.left.rank + node.right.rank + 1
             BL = node.left.height - node.right.height
@@ -528,7 +537,7 @@ def printree(t, bykey=True):
 def trepr(t, bykey=False):
     """Return a list of textual representations of the levels in t
     bykey=True: show keys instead of values"""
-    if t == None:
+    if t is None:
         return ["#"]
 
     thistr = str(t.value)
@@ -596,7 +605,3 @@ def rightspace(row):
     while row[i] == " ":
         i += 1
     return i
-
-
-if __name__ == '__main__':
-    randomTree(10)
