@@ -490,33 +490,44 @@ class AVLTreeList(object):
         node.update()
         new_parent.update()
 
+    def fixNode(self, node):
+        """
+        Fixes the single given node, and returns the number of operations done.
+
+        @type node: AVLNode
+        @param node: The node to fixup.
+        @returns: Number of fixup operations done.
+        """
+        node.update()
+        if node.balanceFactor == 2:
+            if node.left.balanceFactor == 1:
+                self.rightRotation(node)
+                return 1
+            else:
+                self.leftRotation(node.left)
+                self.rightRotation(node)
+                return 2
+        elif node.balanceFactor == -2:
+            if node.right.balanceFactor == -1:
+                self.leftRotation(node)
+                return 1
+            else:
+                self.rightRotation(node.right)
+                self.leftRotation(node)
+                return 2
+        return 0
+
     def fixup(self, node):
         """
         Goes up the tree from a given node after insertion or deletion and makes the required rotation actions to
         maintain the balance of the tree, and then returns how many rotations were done.
 
         @rtype: int
-        @returns: Number of rotations done.
+        @returns: Number of operations done.
         """
         fixes = 0
         while node is not None:
-            node.update()
-            if node.balanceFactor == 2:
-                if node.left.balanceFactor == 1:
-                    self.rightRotation(node)
-                    fixes += 1
-                else:
-                    self.leftRotation(node.left)
-                    self.rightRotation(node)
-                    fixes += 2
-            elif node.balanceFactor == -2:
-                if node.right.balanceFactor == -1:
-                    self.leftRotation(node)
-                    fixes += 1
-                else:
-                    self.rightRotation(node.right)
-                    self.leftRotation(node)
-                    fixes += 2
+            fixes += self.fixNode(node)
             node = node.parent
         return fixes
 
