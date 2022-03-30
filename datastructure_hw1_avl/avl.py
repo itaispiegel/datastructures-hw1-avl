@@ -151,7 +151,9 @@ class AVLNode(object):
         @rtype: int
         @returns: The node's balance factor.
         """
-        return self.left.height - self.right.height
+        left_height = getattr(self.left, "height", 0)
+        right_height = getattr(self.right, "height", 0)
+        return left_height - right_height
 
 
 class AVLTreeList(object):
@@ -184,7 +186,7 @@ class AVLTreeList(object):
         @returns: The value of the ith item in the list
         """
         if index < self.root.rank:
-            node = self.getIth(index + 1)
+            node = self.get(index + 1)
             return node.value
         return None
 
@@ -204,7 +206,7 @@ class AVLTreeList(object):
             self.root = AVLNode(val)
             return 0
         elif index <= self.length() - 1:
-            node = self.getIth(index + 1)
+            node = self.get(index + 1)
             if node.left.isVirtualNode():
                 node.left = AVLNode(val, node)
                 node = node.left
@@ -215,7 +217,7 @@ class AVLTreeList(object):
             fixes = self.fixup(node)
             return fixes
         elif index == self.length():
-            node = self.getIth(index)
+            node = self.get(index)
             node.right = AVLNode(val, node)
             fixes = self.fixup(node)
             return fixes
@@ -234,7 +236,7 @@ class AVLTreeList(object):
         """
         if index > self.length():
             return -1
-        node = self.getIth(index + 1)
+        node = self.get(index + 1)
         if self.root == node:
             if node.left.isVirtualNode():
                 self.root = node.right
@@ -271,7 +273,7 @@ class AVLTreeList(object):
         @returns: The value of the first item, None if the list is empty
         """
         node = self.root
-        while node.left.isRealNode():
+        while node.isRealNode() and node.left.isRealNode():
             node = node.left
         return node.value
 
@@ -283,7 +285,7 @@ class AVLTreeList(object):
         @returns: The value of the last item, None if the list is empty
         """
         node = self.root
-        while node.right.isRealNode():
+        while node.isRealNode() and node.right.isRealNode():
             node = node.right
         return node.value
 
@@ -294,17 +296,15 @@ class AVLTreeList(object):
         @rtype: list
         @returns: a list of strings representing the data structure
         """
-        arr = self._listToArrayRec(self, self.root)
+        arr = self._listToArrayRec(self.root)
         return arr
 
     def _listToArrayRec(self, node):
         if node.isVirtualNode():
             return []
-        arr = self._listToArrayRec(node.left)
-        arr.append(node.value)
-        for i in self._listToArrayRec(node.right):
-            arr.append(i)
-        return arr
+        left_child_array = self._listToArrayRec(node.left)
+        right_child_array = self._listToArrayRec(node.right)
+        return left_child_array + [node.value] + right_child_array
 
     def length(self):
         """
@@ -345,10 +345,10 @@ class AVLTreeList(object):
 
         h_diff = self.root.height - lst.root.height
         if self.root.height > lst.root.height:
-            axis = self.getIth(self.length())
+            axis = self.get(self.length())
             self.delete(self.length() - 1)
         else:
-            axis = lst.getIth(1)
+            axis = lst.get(1)
             lst.delete(0)
         if h_diff < 0:
             node = lst.root
@@ -394,14 +394,14 @@ class AVLTreeList(object):
         """
         return self.root
 
-    def getIth(self, index):
+    def get(self, index):
         """
-        Returns a pointer to the ith node.
+        Returns a pointer to the ith node (starts with index 1).
         @rtype: AVLNode
         @returns: The ith node, or None if the tree is smaller
         """
         node = self.root
-        if index > node.rank:
+        if index > node.rank or 1 > index:
             raise IndexError("index out of range")
         while node.left.rank != index - 1:
             if node.left.rank >= index:
