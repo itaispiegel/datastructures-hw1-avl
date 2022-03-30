@@ -5,7 +5,7 @@
 # name2    - complete info
 import random
 
-"""A class represnting a node in an AVL tree"""
+"""A class representing a node in an AVL tree"""
 
 
 class AVLNode(object):
@@ -161,36 +161,36 @@ class AVLTreeList(object):
 
     """retrieves the value of the i'th item in the list
 
-    @type i: int
-    @pre: 0 <= i < self.length()
-    @param i: index in the list
+    @type index: int
+    @pre: 0 <= index < self.length()
+    @param index: index in the list
     @rtype: str
     @returns: the the value of the i'th item in the list
     """
 
-    def retrieve(self, i):
-        if i < self.root.rank:
-            node = self.getIth(i + 1)
+    def retrieve(self, index):
+        if index < self.root.rank:
+            node = self.getIth(index + 1)
             return node.value
         return None
 
     """inserts val at position i in the list
 
-    @type i: int
-    @pre: 0 <= i <= self.length()
-    @param i: The intended index in the list to which we insert val
+    @type index: int
+    @pre: 0 <= index <= self.length()
+    @param index: The intended index in the list to which we insert val
     @type val: str
     @param val: the value we inserts
     @rtype: list
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
 
-    def insert(self, i, val):
-        if self.empty() and i == 0:
+    def insert(self, index, val):
+        if self.empty() and index == 0:
             self.root = self.newNode(None, val)
             return 0
-        elif i + 1 <= self.length():
-            node = self.getIth(i + 1)
+        elif index <= self.length() - 1:
+            node = self.getIth(index + 1)
             if node.left.isVirtualNode():
                 node.left = self.newNode(node, val)
                 node = node.left
@@ -200,8 +200,8 @@ class AVLTreeList(object):
                 node = node.right
             fixes = self.fixup(node)
             return fixes
-        elif i == self.length():
-            node = self.getIth(i)
+        elif index == self.length():
+            node = self.getIth(index)
             node.right = self.newNode(node, val)
             fixes = self.fixup(node)
             return fixes
@@ -210,17 +210,17 @@ class AVLTreeList(object):
 
     """deletes the i'th item in the list
 
-    @type i: int
-    @pre: 0 <= i < self.length()
-    @param i: The intended index in the list to be deleted
+    @type index: int
+    @pre: 0 <= index < self.length()
+    @param index: The intended index in the list to be deleted
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
 
-    def delete(self, i):
-        if i > self.length():
+    def delete(self, index):
+        if index > self.length():
             return -1
-        node = self.getIth(i + 1)
+        node = self.getIth(index + 1)
         if self.root == node:
             if node.left.isVirtualNode():
                 self.root = node.right
@@ -311,7 +311,7 @@ class AVLTreeList(object):
     right is an AVLTreeList representing the list from index i+1, and val is the value at the i'th index.
     """
 
-    def split(self, i):
+    def split(self, index):
         return None
 
     """concatenates lst to self
@@ -385,15 +385,15 @@ class AVLTreeList(object):
     @returns: the ith node, or None if the tree is smaller
     """
 
-    def getIth(self, i):
+    def getIth(self, index):
         node = self.root
-        if i > node.rank:
+        if index > node.rank:
             raise IndexError("index out of range")
-        while node.left.rank != i - 1:
-            if node.left.rank >= i:
+        while node.left.rank != index - 1:
+            if node.left.rank >= index:
                 node = node.left
             else:
-                i -= node.left.rank + 1
+                index -= node.left.rank + 1
                 node = node.right
         return node
 
@@ -546,7 +546,7 @@ def trepr(t, bykey=False):
 
 
 def conc(left, root, right):
-    """Return a concatenation of textual represantations of
+    """Return a concatenation of textual representations of
     a root node, its left node, and its right node
     root is a string, and left and right are lists of strings"""
 
