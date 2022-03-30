@@ -8,19 +8,28 @@
 class AVLNode(object):
     """A class representing a node in an AVL tree"""
 
-    def __init__(self, value):
+    def __init__(self, value=None, parent=None):
         """
         Constructor, you are allowed to add more fields.
 
-        @type value: str
-        @param value: data of your node
+        @type value: Optional[str]
+        @param value: Optional data for the node. If None, then the node will be considered virtual.
+        @type parent: AVLNode
+        @param parent: The parent node to set.
         """
         self.value = value
-        self.left = None
-        self.right = None
-        self.parent = None
-        self.height = -1
-        self.rank = 0
+        self.parent = parent
+
+        if value is None:
+            self.left = None
+            self.right = None
+            self.height = -1
+            self.rank = 0
+        else:
+            self.left = AVLNode(parent=self)
+            self.right = AVLNode(parent=self)
+            self.rank = 1
+            self.height = 0
 
     def getLeft(self):
         """
@@ -142,7 +151,7 @@ class AVLTreeList(object):
 
     def __init__(self):
         """Constructor, you are allowed to add more fields."""
-        self.root = AVLNode(None)
+        self.root = AVLNode()
         # add your fields here
 
     def empty(self):
@@ -182,22 +191,22 @@ class AVLTreeList(object):
         @returns: The number of re-balance operation due to AVL re-balancing.
         """
         if self.empty() and index == 0:
-            self.root = self.newNode(None, val)
+            self.root = AVLNode(val)
             return 0
         elif index <= self.length() - 1:
             node = self.getIth(index + 1)
             if node.left.isVirtualNode():
-                node.left = self.newNode(node, val)
+                node.left = AVLNode(val, node)
                 node = node.left
             else:
                 node = self.getPred(node)
-                node.right = self.newNode(node, val)
+                node.right = AVLNode(val, node)
                 node = node.right
             fixes = self.fixup(node)
             return fixes
         elif index == self.length():
             node = self.getIth(index)
-            node.right = self.newNode(node, val)
+            node.right = AVLNode(val, node)
             fixes = self.fixup(node)
             return fixes
 
@@ -237,9 +246,9 @@ class AVLTreeList(object):
             pred = self.getPred(node)
             node.value = pred.value
             if self.isParentRight(pred):
-                pred.parent.left = AVLNode(None)
+                pred.parent.left = AVLNode()
             else:
-                pred.parent.right = AVLNode(None)
+                pred.parent.right = AVLNode()
             fixes = self.fixup(pred.parent)
             return fixes
         return -1
@@ -407,21 +416,6 @@ class AVLTreeList(object):
             while node.parent is not None and self.isParentRight(node):
                 node = node.parent
             return node.parent
-
-    def newNode(self, parent, val):
-        """
-        Initializes a new real node.
-
-        @rtype: AVLNode
-        @returns: The new node after it's initialized
-        """
-        node = AVLNode(val)
-        node.left = AVLNode(None)
-        node.right = AVLNode(None)
-        node.rank = 1
-        node.height = 0
-        node.parent = parent
-        return node
 
     def rotate(self, node, side):
         """
