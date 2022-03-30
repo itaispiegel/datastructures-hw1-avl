@@ -180,9 +180,8 @@ class AVLTreeList(object):
         if self.empty() and i == 0:
             self.root = self.newNode(None, val)
             return 0
-        i += 1
-        elif i <= self.length():
-            node = self.getIth(i)
+        elif i + 1 <= self.length():
+            node = self.getIth(i + 1)
             if node.left.isRealNode() == 0:
                 node.left = self.newNode(node, val)
                 node = node.left
@@ -192,8 +191,8 @@ class AVLTreeList(object):
                 node = node.right
             fixes = self.fixup(node)
             return fixes
-        elif i == self.length() + 1:
-            node = self.getIth(i - 1)
+        elif i == self.length():
+            node = self.getIth(i)
             node.right = self.newNode(node, val)
             fixes = self.fixup(node)
             return fixes
@@ -597,3 +596,7 @@ def rightspace(row):
     while row[i] == " ":
         i += 1
     return i
+
+
+if __name__ == '__main__':
+    randomTree(10)
