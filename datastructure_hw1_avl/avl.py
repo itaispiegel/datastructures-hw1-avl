@@ -88,6 +88,7 @@ class AVLNode(object):
         @param node: a node
         """
         self.left = node
+        node.setParent(self)
 
     def setRight(self, node):
         """
@@ -97,6 +98,7 @@ class AVLNode(object):
         @param node: a node
         """
         self.right = node
+        node.setParent(self)
 
     def setParent(self, node):
         """
@@ -437,49 +439,56 @@ class AVLTreeList(object):
                 node = node.parent
             return node.parent
 
-    def rotate(self, node, side):
+    def rightRotation(self, node):
         """
-        Rotates the tree to maintain balance.
+        Performs a right rotation around the given node.
 
-        @rtype: None
-        @returns: None
+        @type node: AVLNode
+        @param node: The node to rotate around.
         """
+        new_parent = node.getLeft()
+        node.setLeft(new_parent.getRight())
+        original_parent = node.getParent()
+        new_parent.setRight(node)
 
-        # To avoid code duplication, we define lambda functions that
-        # 'reverse' the sides if needed, and then the rest is written as
-        # if this is a right rotation, where all relevant directions
-        # are reversed in the left rotation
-        if side == 1:  # if the rotation is to the right
-            gRight = AVLNode.getRight
-            gLeft = AVLNode.getLeft
-            sRight = AVLNode.setRight
-            sLeft = AVLNode.setLeft
-        else:  # if the rotation is to the left, reverse all directions
-            gRight = AVLNode.getLeft
-            gLeft = AVLNode.getRight
-            sRight = AVLNode.setLeft
-            sLeft = AVLNode.setRight
-        A = gLeft(node)
-        par = node.parent
-        sLeft(node, gRight(A))
-        sRight(A, node)
+        self._updateNodeParent(node, new_parent, original_parent)
 
-        # The side the original node is to its parent is not
-        # related to the direction of the rotation, which is why
-        # we don't use the lambda functions but the actual fields
+    def leftRotation(self, node):
+        """
+        Performs a left rotation around the given node.
+
+        @type node: AVLNode
+        @param node: The node to rotate around.
+        """
+        new_parent = node.getRight()
+        node.setRight(new_parent.getLeft())
+        original_parent = node.getParent()
+        new_parent.setLeft(node)
+
+        self._updateNodeParent(node, new_parent, original_parent)
+
+    def _updateNodeParent(self, node, new_parent, original_parent):
+        """
+        Private method that updates the given node's parent to the new parent, updates the root if required, and
+        ensures the new parent is a child of the given original parent.
+
+        @type node: AVLNode
+        @param node: The node to update its parent.
+        @type new_parent: AVLNode
+        @param new_parent: The new parent of the given node.
+        @type original_parent: AVLNode
+        @param original_parent: The original parent of the given node - will now be its grandparent.
+        """
         if node == self.root:
-            self.root = A
+            self.root = new_parent
+            new_parent.setParent(None)
         elif self.isParentRight(node):
-            node.parent.left = A
+            original_parent.setLeft(new_parent)
         else:
-            node.parent.right = A
+            original_parent.setRight(new_parent)
 
-        node.parent = A
-        A.parent = par
-        l = gLeft(node)
-        l.parent = node
         node.update()
-        A.update()
+        new_parent.update()
 
     def fixup(self, node):
         """
@@ -493,20 +502,20 @@ class AVLTreeList(object):
         while node is not None:
             node.update()
             if node.balanceFactor == 2:
-                if node.left.left.height - node.left.right.height == 1:
-                    self.rotate(node, 1)
+                if node.left.balanceFactor == 1:
+                    self.rightRotation(node)
                     fixes += 1
                 else:
-                    self.rotate(node.left, 0)
-                    self.rotate(node, 1)
+                    self.leftRotation(node.left)
+                    self.rightRotation(node)
                     fixes += 2
             elif node.balanceFactor == -2:
-                if node.right.left.height - node.right.right.height == -1:
-                    self.rotate(node, 0)
+                if node.right.balanceFactor == -1:
+                    self.leftRotation(node)
                     fixes += 1
                 else:
-                    self.rotate(node.right, 1)
-                    self.rotate(node, 0)
+                    self.rightRotation(node.right)
+                    self.leftRotation(node)
                     fixes += 2
             node = node.parent
         return fixes
