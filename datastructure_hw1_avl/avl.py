@@ -143,6 +143,16 @@ class AVLNode(object):
         """
         return not self.isRealNode()
 
+    @property
+    def balanceFactor(self):
+        """
+        Returns the balance factor of the given node, which is the difference in height of the left node and the right.
+
+        @rtype: int
+        @returns: The node's balance factor.
+        """
+        return self.left.height - self.right.height
+
 
 class AVLTreeList(object):
     """
@@ -475,8 +485,7 @@ class AVLTreeList(object):
         while node is not None:
             node.height = max(node.left.height, node.right.height) + 1
             node.rank = node.left.rank + node.right.rank + 1
-            BL = node.left.height - node.right.height
-            if BL == 2:
+            if node.balanceFactor == 2:
                 if node.left.left.height - node.left.right.height == 1:
                     self.rotate(node, 1)
                     fixes += 1
@@ -484,7 +493,7 @@ class AVLTreeList(object):
                     self.rotate(node.left, 0)
                     self.rotate(node, 1)
                     fixes += 2
-            elif BL == -2:
+            elif node.balanceFactor == -2:
                 if node.right.left.height - node.right.right.height == -1:
                     self.rotate(node, 0)
                     fixes += 1
