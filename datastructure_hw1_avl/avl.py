@@ -120,7 +120,7 @@ class AVLNode(object):
 
     def setHeight(self, h):
         """
-        Sets the balance factor of the node
+        Sets the height of the node
 
         @type h: int
         @param h: the height
