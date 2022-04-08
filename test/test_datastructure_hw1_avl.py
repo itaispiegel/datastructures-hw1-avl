@@ -69,6 +69,11 @@ def test_get_first_and_last(empty_tree: AVLTreeList):
     assert empty_tree.first() == "c" and empty_tree.last() == "b"
 
 
-def test_list_to_array(non_empty_tree: AVLTreeList):
+def test_list_to_array_for_empty_list(empty_tree: AVLTreeList):
+    array = empty_tree.listToArray()
+    assert array == []
+
+
+def test_list_to_array_for_non_empty_list(non_empty_tree: AVLTreeList):
     array = non_empty_tree.listToArray()
     assert array == ["a", "b", "c", "d"]

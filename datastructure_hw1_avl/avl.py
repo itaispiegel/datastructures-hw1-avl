@@ -308,15 +308,23 @@ class AVLTreeList(object):
         @rtype: list
         @returns: a list of strings representing the data structure
         """
-        arr = self._listToArrayRec(self.root)
+        arr = []
+        self._listToArrayRec(self.root, arr)
         return arr
 
-    def _listToArrayRec(self, node):
-        if node.isVirtualNode():
-            return []
-        left_child_array = self._listToArrayRec(node.left)
-        right_child_array = self._listToArrayRec(node.right)
-        return left_child_array + [node.value] + right_child_array
+    def _listToArrayRec(self, node, lst):
+        """
+        An internal function that traverses the tree inorder, and adds all node values to the given list.
+
+        @type node: AVLNode
+        @param node: The node to start the inorder traversal from.
+        @type lst: list
+        @param lst: The list to add the values to.
+        """
+        if node.isRealNode():
+            self._listToArrayRec(node.left, lst)
+            lst.append(node.value)
+            self._listToArrayRec(node.right, lst)
 
     def length(self):
         """
