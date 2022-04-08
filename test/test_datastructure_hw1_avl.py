@@ -32,6 +32,15 @@ def test_insert_item_at_too_large_index_returns_negative_one(empty_tree: AVLTree
     assert empty_tree.empty()
 
 
+def test_insert_item_in_the_middle(non_empty_tree: AVLTreeList):
+    non_empty_tree.insert(1, "new_item")
+    assert non_empty_tree.retrieve(0) == "a"
+    assert non_empty_tree.retrieve(1) == "new_item"
+    assert non_empty_tree.retrieve(2) == "b"
+    assert non_empty_tree.retrieve(3) == "c"
+    assert non_empty_tree.retrieve(4) == "d"
+
+
 @pytest.mark.parametrize(("index",), [[0], [-1], [2]])
 def test_get_item_when_index_is_out_bounds_raises_exception(
     empty_tree: AVLTreeList, index: int
