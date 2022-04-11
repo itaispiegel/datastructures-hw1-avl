@@ -153,7 +153,10 @@ class AVLNode(object):
         @returns: None
         """
         self.rank = self.left.rank + 1 + self.right.rank
-        self.height = max(self.left.height, self.right.height) + 1
+        new_height = max(self.left.height, self.right.height) + 1
+        updates = int(self.height != new_height)
+        self.height = new_height
+        return updates
 
     @property
     def balanceFactor(self):
@@ -173,9 +176,9 @@ class AVLTreeList(object):
     A class implementing the ADT list, using an AVL tree.
     """
 
-    def __init__(self):
+    def __init__(self, root = None):
         """Constructor, you are allowed to add more fields."""
-        self.root = AVLNode()
+        self.root = root or AVLNode()
         # add your fields here
 
     def empty(self):
@@ -340,7 +343,20 @@ class AVLTreeList(object):
         @returns: A list [left, val, right], where left is an AVLTreeList representing the list until index i-1,
         right is an AVLTreeList representing the list from index i+1, and val is the value at the ith index.
         """
-        return None
+        node = self.get(index+1)
+        val = node.value
+        smallTree = AVLTreeList(node.left)
+        bigTree = AVLTreeList(node.right)
+        
+        while node.parent is not None:
+            if node.isParentRight():
+                bigTree.join(AVLTreeList(node.parent.right),node.parent)
+            else:
+                tempTree = AVLTreeList(node.parent.left).join(smallTree,node.parent)
+                smallTree = tempTree
+            node = node.parent
+        
+        return [smallTree, val, bigTree]
 
     def concat(self, lst):
         """
@@ -351,44 +367,50 @@ class AVLTreeList(object):
         @rtype: int
         @returns: the absolute value of the difference between the height of the AVL trees joined
         """
+        original_h_diff = self.root.height - lst.root.height
         if lst.empty():
-            return self.root.height
+            return abs(h_diff)
         if self.empty():
             self.root = lst.root
-            return self.root.height
-
+            return abs(h_diff)
+        
+        axis = self.get(self.length())
+        self.delete(self.length() - 1)
+        self.join(lst,axis)
+        return abs(original_h_diff)
+    
+    def join(self, lst, axis):
+        if lst.empty():
+            self.insert(self.length,axis)
+            return
+        elif self.empty():
+            lst.insert(0,axis)
+            self.root = lst.root
+            return
         h_diff = self.root.height - lst.root.height
-        if self.root.height > lst.root.height:
-            axis = self.get(self.length())
-            self.delete(self.length() - 1)
-        else:
-            axis = lst.get(1)
-            lst.delete(0)
-        if h_diff < 0:
+        if h_diff ==0:
+            axis.setLeft(self.root)
+            axis.setRight(lst.root)
+            self.root = axis
+        elif h_diff < 0:
             node = lst.root
             while node.height > self.root.height:
                 node = node.left
-            axis.left = self.root
-            self.root.parent = axis
-            axis.right = node
-            node.parent.left = axis
-            node.parent = axis
+            axis.setLeft(self.root)
+            node.parent.setLeft(axis)
+            axis.setRight(node)
             self.root = lst.root
         else:
             node = self.root
             while node.height > lst.root.height:
                 node = node.right
-            axis.right = lst.root
-            lst.root.parent = axis
-            axis.left = node
-            node.parent.right = axis
-            node.parent = axis
+            axis.setRight(lst.root)
+            node.parent.setRight(axis)
+            axis.setLeft(node)
 
         self.fixup(axis)
-
-        return abs(h_diff)
-
-    def search(self, val):
+        
+    def search(self, val, index = 0):
         """
         Searches for the given in the list and return its index.
 
@@ -397,7 +419,16 @@ class AVLTreeList(object):
         @rtype: int
         @returns: The first index that contains val, -1 if not found.
         """
-        return None
+        if self.isVirtualNode():
+            return -1
+        left = search(self.left, val, index)
+        if left != -1:
+            return left
+        if self.value == val:
+            return index+ self.left.rank
+        
+        right = search(self.right, val, index+self.left.rank+1)
+        return right
 
     def getRoot(self):
         """
@@ -500,7 +531,7 @@ class AVLTreeList(object):
         @param node: The node to fixup.
         @returns: Number of fixup operations done.
         """
-        node.update()
+        updates = node.update()
         if node.balanceFactor == 2:
             if node.left.balanceFactor == 1:
                 self.rightRotation(node)
@@ -517,7 +548,7 @@ class AVLTreeList(object):
                 self.rightRotation(node.right)
                 self.leftRotation(node)
                 return 2
-        return 0
+        return updates
 
     def fixup(self, node):
         """
