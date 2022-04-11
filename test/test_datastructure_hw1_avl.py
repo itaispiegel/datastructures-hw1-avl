@@ -32,6 +32,13 @@ def test_insert_item_at_too_large_index_returns_negative_one(empty_tree: AVLTree
     assert empty_tree.empty()
 
 
+def test_retrieve_items(non_empty_tree: AVLTreeList):
+    assert non_empty_tree.retrieve(0) == "a"
+    assert non_empty_tree.retrieve(1) == "b"
+    assert non_empty_tree.retrieve(2) == "c"
+    assert non_empty_tree.retrieve(3) == "d"
+
+
 def test_insert_item_in_the_middle(non_empty_tree: AVLTreeList):
     non_empty_tree.insert(1, "new_item")
     assert non_empty_tree.retrieve(0) == "a"
@@ -50,18 +57,13 @@ def test_get_item_when_index_is_out_bounds_raises_exception(
         assert empty_tree.get(index)
 
 
-def test_insert_delete_and_retrieve_items(non_empty_tree: AVLTreeList):
+@pytest.mark.skip("Need to fix delete")
+def test_retrieve_items_after_delete(non_empty_tree: AVLTreeList):
+    non_empty_tree.delete(2)
+
     assert non_empty_tree.retrieve(0) == "a"
     assert non_empty_tree.retrieve(1) == "b"
-    assert non_empty_tree.retrieve(2) == "c"
-    assert non_empty_tree.retrieve(3) == "d"
-
-    # TODO Fix delete function
-    # assert empty_tree.delete(2)
-    #
-    # assert empty_tree.retrieve(0) == "a"
-    # assert empty_tree.retrieve(1) == "b"
-    # assert empty_tree.retrieve(2) == "d"
+    assert non_empty_tree.retrieve(2) == "d"
 
 
 def test_get_first_and_last(empty_tree: AVLTreeList):
@@ -76,6 +78,15 @@ def test_get_first_and_last(empty_tree: AVLTreeList):
 
     empty_tree.insert(0, "c")
     assert empty_tree.first() == "c" and empty_tree.last() == "b"
+
+
+@pytest.mark.skip("Need to fix delete")
+def test_get_first_and_last_after_deleting_first(non_empty_tree: AVLTreeList):
+    non_empty_tree.delete(0)
+    assert non_empty_tree.first() == "b"
+
+    non_empty_tree.delete(2)
+    assert non_empty_tree.last() == "c"
 
 
 def test_list_to_array_for_empty_list(empty_tree: AVLTreeList):
