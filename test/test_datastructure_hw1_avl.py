@@ -57,7 +57,6 @@ def test_get_item_when_index_is_out_bounds_raises_exception(
         assert empty_tree.get(index)
 
 
-@pytest.mark.skip("Need to fix delete")
 def test_retrieve_items_after_delete(non_empty_tree: AVLTreeList):
     non_empty_tree.delete(2)
 
@@ -80,7 +79,6 @@ def test_get_first_and_last(empty_tree: AVLTreeList):
     assert empty_tree.first() == "c" and empty_tree.last() == "b"
 
 
-@pytest.mark.skip("Need to fix delete")
 def test_get_first_and_last_after_deleting_first(non_empty_tree: AVLTreeList):
     non_empty_tree.delete(0)
     assert non_empty_tree.first() == "b"

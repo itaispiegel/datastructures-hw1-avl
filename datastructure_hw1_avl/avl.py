@@ -249,33 +249,27 @@ class AVLTreeList(object):
         if index > self.length():
             return -1
         node = self.get(index + 1)
-        if self.root == node:
-            if node.left.isVirtualNode():
+        
+        if node.left.isVirtualNode():
+            node.right.parent = node.parent
+            if node == self.root:
                 self.root = node.right
-                self.root.parent = None
                 return 0
-
-            if node.left.isVirtualNode():
-                node.right.parent = node.parent
-                if node == self.root:
-                    self.root = node.right
-                    return 0
-                elif self.isParentRight(node):
-                    node.parent.left = node.right
-                else:
-                    node.parent.right = node.right
-                fixes = self.fixup(node.parent)
-                return fixes
-
-            pred = self.getPred(node)
-            node.value = pred.value
-            if self.isParentRight(pred):
-                pred.parent.left = AVLNode()
+            elif self.isParentRight(node):
+                node.parent.left = node.right
             else:
-                pred.parent.right = AVLNode()
-            fixes = self.fixup(pred.parent)
+                node.parent.right = node.right
+            fixes = self.fixup(node.parent)
             return fixes
-        return -1
+
+        pred = self.getPred(node)
+        node.value = pred.value
+        if self.isParentRight(pred):
+            pred.parent.left = AVLNode()
+        else:
+            pred.parent.right = AVLNode()
+        fixes = self.fixup(pred.parent)
+        return fixes
 
     def first(self):
         """
