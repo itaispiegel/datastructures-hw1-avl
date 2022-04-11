@@ -491,12 +491,21 @@ class AVLTreeList(object):
         @type node: AVLNode
         @param node: The node to rotate around.
         """
-        new_parent = node.getLeft()
-        node.setLeft(new_parent.getRight())
-        original_parent = node.getParent()
-        new_parent.setRight(node)
+        new_parent = node.left
+        node.left = new_parent.right
+        node.left.parent = node
+        new_parent.right = node
+        new_parent.parent = node.parent
 
-        self._updateNodeParent(node, new_parent, original_parent)
+        if new_parent.parent is None:
+            self.root = new_parent
+        elif new_parent.parent.right == node:
+            new_parent.parent.right = new_parent
+        else:
+            new_parent.parent.left = new_parent
+
+        node.parent = new_parent
+        node.update()
 
     def leftRotation(self, node):
         """
@@ -505,35 +514,21 @@ class AVLTreeList(object):
         @type node: AVLNode
         @param node: The node to rotate around.
         """
-        new_parent = node.getRight()
-        node.setRight(new_parent.getLeft())
-        original_parent = node.getParent()
-        new_parent.setLeft(node)
+        new_parent = node.right
+        node.right = new_parent.left
+        node.right.parent = node
+        new_parent.left = node
+        new_parent.parent = node.parent
 
-        self._updateNodeParent(node, new_parent, original_parent)
-
-    def _updateNodeParent(self, node, new_parent, original_parent):
-        """
-        Private method that updates the given node's parent to the new parent, updates the root if required, and
-        ensures the new parent is a child of the given original parent.
-
-        @type node: AVLNode
-        @param node: The node to update its parent.
-        @type new_parent: AVLNode
-        @param new_parent: The new parent of the given node.
-        @type original_parent: AVLNode
-        @param original_parent: The original parent of the given node - will now be its grandparent.
-        """
-        if node == self.root:
+        if new_parent.parent is None:
             self.root = new_parent
-            new_parent.setParent(None)
-        elif node.isParentRight():
-            original_parent.setLeft(new_parent)
+        elif new_parent.parent.right == node:
+            new_parent.parent.right = new_parent
         else:
-            original_parent.setRight(new_parent)
+            new_parent.parent.left = new_parent
 
+        node.parent = new_parent
         node.update()
-        new_parent.update()
 
     def fixNode(self, node):
         """

@@ -1,6 +1,10 @@
+import string
+
 import pytest
 
 from datastructure_hw1_avl.avl import AVLTreeList
+
+LARGE_TREE_SIZE = 500
 
 
 @pytest.fixture
@@ -9,12 +13,18 @@ def empty_tree():
 
 
 @pytest.fixture
-def non_empty_tree():
+def small_tree():
     tree = AVLTreeList()
-    tree.insert(0, "a")
-    tree.insert(1, "b")
-    tree.insert(2, "c")
-    tree.insert(3, "d")
+    for i in range(4):
+        tree.insert(i, string.ascii_lowercase[i])
+    return tree
+
+
+@pytest.fixture
+def large_tree():
+    tree = AVLTreeList()
+    for i in range(LARGE_TREE_SIZE):
+        tree.insert(i, str(i))
     return tree
 
 
@@ -32,20 +42,27 @@ def test_insert_item_at_too_large_index_returns_negative_one(empty_tree: AVLTree
     assert empty_tree.empty()
 
 
-def test_retrieve_items(non_empty_tree: AVLTreeList):
-    assert non_empty_tree.retrieve(0) == "a"
-    assert non_empty_tree.retrieve(1) == "b"
-    assert non_empty_tree.retrieve(2) == "c"
-    assert non_empty_tree.retrieve(3) == "d"
+def test_retrieve_items_from_large_tree(large_tree: AVLTreeList):
+    for i in range(LARGE_TREE_SIZE):
+        assert large_tree.retrieve(i) == str(i)
 
 
-def test_insert_item_in_the_middle(non_empty_tree: AVLTreeList):
-    non_empty_tree.insert(1, "new_item")
-    assert non_empty_tree.retrieve(0) == "a"
-    assert non_empty_tree.retrieve(1) == "new_item"
-    assert non_empty_tree.retrieve(2) == "b"
-    assert non_empty_tree.retrieve(3) == "c"
-    assert non_empty_tree.retrieve(4) == "d"
+def test_insert_item_in_the_middle_of_the_small_tree(small_tree: AVLTreeList):
+    small_tree.insert(1, "new_item")
+    assert small_tree.retrieve(0) == "a"
+    assert small_tree.retrieve(1) == "new_item"
+    assert small_tree.retrieve(2) == "b"
+    assert small_tree.retrieve(3) == "c"
+    assert small_tree.retrieve(4) == "d"
+
+
+def test_insert_item_in_the_middle_of_the_large_tree(large_tree: AVLTreeList):
+    large_tree.insert(420, "new_item")
+    for i in range(420):
+        assert large_tree.retrieve(i) == str(i)
+    assert large_tree.retrieve(420) == "new_item"
+    for i in range(421, LARGE_TREE_SIZE + 1):
+        assert large_tree.retrieve(i) == str(i - 1)
 
 
 @pytest.mark.parametrize(("index",), [[0], [-1], [2]])
@@ -57,15 +74,25 @@ def test_get_item_when_index_is_out_bounds_raises_exception(
         assert empty_tree.get(index)
 
 
-def test_retrieve_items_after_delete(non_empty_tree: AVLTreeList):
-    non_empty_tree.delete(2)
+def test_retrieve_items_after_delete_from_small_tree(small_tree: AVLTreeList):
+    small_tree.delete(2)
 
-    assert non_empty_tree.retrieve(0) == "a"
-    assert non_empty_tree.retrieve(1) == "b"
-    assert non_empty_tree.retrieve(2) == "d"
+    assert small_tree.retrieve(0) == "a"
+    assert small_tree.retrieve(1) == "b"
+    assert small_tree.retrieve(2) == "d"
 
 
-def test_get_first_and_last(empty_tree: AVLTreeList):
+def test_retrieve_items_after_delete_from_large_tree(large_tree: AVLTreeList):
+    large_tree.delete(278)
+
+    assert large_tree.length() == LARGE_TREE_SIZE - 1
+    for i in range(278):
+        assert large_tree.retrieve(i) == str(i)
+    for i in range(278, LARGE_TREE_SIZE - 1):
+        assert large_tree.retrieve(i) == str(i + 1)
+
+
+def test_get_first_and_last_on_empty_tree(empty_tree: AVLTreeList):
     assert empty_tree.first() is None
     assert empty_tree.last() is None
 
@@ -79,12 +106,12 @@ def test_get_first_and_last(empty_tree: AVLTreeList):
     assert empty_tree.first() == "c" and empty_tree.last() == "b"
 
 
-def test_get_first_and_last_after_deleting_first(non_empty_tree: AVLTreeList):
-    non_empty_tree.delete(0)
-    assert non_empty_tree.first() == "b"
+def test_get_first_and_last_after_deleting_first(small_tree: AVLTreeList):
+    small_tree.delete(0)
+    assert small_tree.first() == "b"
 
-    non_empty_tree.delete(2)
-    assert non_empty_tree.last() == "c"
+    small_tree.delete(2)
+    assert small_tree.last() == "c"
 
 
 def test_list_to_array_for_empty_list(empty_tree: AVLTreeList):
@@ -92,20 +119,20 @@ def test_list_to_array_for_empty_list(empty_tree: AVLTreeList):
     assert array == []
 
 
-def test_list_to_array_for_non_empty_list(non_empty_tree: AVLTreeList):
-    array = non_empty_tree.listToArray()
+def test_list_to_array_for_non_empty_list(small_tree: AVLTreeList):
+    array = small_tree.listToArray()
     assert array == ["a", "b", "c", "d"]
 
 
-def test_concat_two_trees_for_non_empty_tree(non_empty_tree: AVLTreeList):
+def test_concat_two_trees_for_non_empty_tree(small_tree: AVLTreeList):
     tree2 = AVLTreeList()
     tree2.insert(0, "e")
     tree2.insert(1, "f")
     tree2.insert(2, "g")
     tree2.insert(3, "h")
-    non_empty_tree.concat(tree2)
-    assert non_empty_tree.last() == "h"
-    assert non_empty_tree.retrieve(3) == "d"
-    assert non_empty_tree.retrieve(5) == "f"
-    assert non_empty_tree.root.parent is None
-    assert non_empty_tree.root.value == "f"
+    small_tree.concat(tree2)
+    assert small_tree.last() == "h"
+    assert small_tree.retrieve(3) == "d"
+    assert small_tree.retrieve(5) == "f"
+    assert small_tree.root.parent is None
+    assert small_tree.root.value == "f"
