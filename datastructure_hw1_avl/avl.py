@@ -260,8 +260,8 @@ class AVLTreeList(object):
         """
         if index > self.length():
             return -1
-        node = self.get(index + 1)
 
+        node = self.get(index + 1)
         if node.left.isVirtualNode():
             node.right.parent = node.parent
             if node == self.root:
@@ -277,9 +277,10 @@ class AVLTreeList(object):
         pred = self.getPred(node)
         node.value = pred.value
         if pred.isParentRight():
-            pred.parent.left = AVLNode()
+            pred.parent.left = pred.left
         else:
-            pred.parent.right = AVLNode()
+            pred.parent.right = pred.left
+        pred.left.parent = pred.parent
         fixes = self.fixup(pred.parent)
         return fixes
 
@@ -480,7 +481,7 @@ class AVLTreeList(object):
                 node = node.right
             return node
         else:
-            while node.parent is not None and self.isParentRight(node):
+            while node.parent is not None and node.isParentRight():
                 node = node.parent
             return node.parent
 
