@@ -1,18 +1,22 @@
 import random
-import uuid
+import string
 from test.conftest import LARGE_TREE_SIZE
 from typing import Any, List, Tuple
 
 from datastructure_hw1_avl.avl import AVLTreeList
 
 ITERATIONS = 1000
+RANDOM_STRINGS_SIZE = 15
+
+# This random seed causes the bug deterministically :(
+random.seed(19)
 
 
 def _test_list_insert(avl_tree: AVLTreeList, equivalent_list: List[str]):
     index = random.randint(0, avl_tree.length())
-    new_item = uuid.uuid4()
-    avl_tree.insert(index, new_item.hex)
-    equivalent_list.insert(index, new_item.hex)
+    new_item = "".join(random.choices(string.ascii_lowercase + string.digits, k=RANDOM_STRINGS_SIZE))
+    avl_tree.insert(index, new_item)
+    equivalent_list.insert(index, new_item)
 
 
 def _test_list_remove(avl_tree: AVLTreeList, equivalent_list: List[str]):
