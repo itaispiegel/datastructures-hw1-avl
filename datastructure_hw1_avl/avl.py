@@ -158,6 +158,15 @@ class AVLNode(object):
         self.height = new_height
         return updates
 
+    def isParentRight(self):
+        """
+        Checks if the given node's parent is to its left or right.
+
+        @rtype: bool
+        @returns: True iff the node's parent is to the right of it.
+        """
+        return self.parent is not None and self.parent.left == self
+
     @property
     def balanceFactor(self):
         """
@@ -176,7 +185,7 @@ class AVLTreeList(object):
     A class implementing the ADT list, using an AVL tree.
     """
 
-    def __init__(self, root = None):
+    def __init__(self, root=None):
         """Constructor, you are allowed to add more fields."""
         self.root = root or AVLNode()
         # add your fields here
@@ -252,13 +261,13 @@ class AVLTreeList(object):
         if index > self.length():
             return -1
         node = self.get(index + 1)
-        
+
         if node.left.isVirtualNode():
             node.right.parent = node.parent
             if node == self.root:
                 self.root = node.right
                 return 0
-            elif self.isParentRight(node):
+            elif node.isParentRight():
                 node.parent.left = node.right
             else:
                 node.parent.right = node.right
@@ -267,7 +276,7 @@ class AVLTreeList(object):
 
         pred = self.getPred(node)
         node.value = pred.value
-        if self.isParentRight(pred):
+        if pred.isParentRight():
             pred.parent.left = AVLNode()
         else:
             pred.parent.right = AVLNode()
@@ -343,19 +352,19 @@ class AVLTreeList(object):
         @returns: A list [left, val, right], where left is an AVLTreeList representing the list until index i-1,
         right is an AVLTreeList representing the list from index i+1, and val is the value at the ith index.
         """
-        node = self.get(index+1)
+        node = self.get(index + 1)
         val = node.value
         smallTree = AVLTreeList(node.left)
         bigTree = AVLTreeList(node.right)
-        
+
         while node.parent is not None:
             if node.isParentRight():
-                bigTree.join(AVLTreeList(node.parent.right),node.parent)
+                bigTree.join(AVLTreeList(node.parent.right), node.parent)
             else:
-                tempTree = AVLTreeList(node.parent.left).join(smallTree,node.parent)
+                tempTree = AVLTreeList(node.parent.left).join(smallTree, node.parent)
                 smallTree = tempTree
             node = node.parent
-        
+
         return [smallTree, val, bigTree]
 
     def concat(self, lst):
@@ -367,32 +376,32 @@ class AVLTreeList(object):
         @rtype: int
         @returns: the absolute value of the difference between the height of the AVL trees joined
         """
-        original_h_diff = self.root.height - lst.root.height
+        original_height_diff = self.root.height - lst.root.height
         if lst.empty():
-            return abs(h_diff)
+            return abs(original_height_diff)
         if self.empty():
             self.root = lst.root
-            return abs(h_diff)
-        
+            return abs(original_height_diff)
+
         axis = self.get(self.length())
         self.delete(self.length() - 1)
-        self.join(lst,axis)
-        return abs(original_h_diff)
-    
+        self.join(lst, axis)
+        return abs(original_height_diff)
+
     def join(self, lst, axis):
         if lst.empty():
-            self.insert(self.length,axis)
+            self.insert(self.length(), axis)
             return
         elif self.empty():
-            lst.insert(0,axis)
+            lst.insert(0, axis)
             self.root = lst.root
             return
-        h_diff = self.root.height - lst.root.height
-        if h_diff ==0:
+        height_diff = self.root.height - lst.root.height
+        if height_diff == 0:
             axis.setLeft(self.root)
             axis.setRight(lst.root)
             self.root = axis
-        elif h_diff < 0:
+        elif height_diff < 0:
             node = lst.root
             while node.height > self.root.height:
                 node = node.left
@@ -409,8 +418,8 @@ class AVLTreeList(object):
             axis.setLeft(node)
 
         self.fixup(axis)
-        
-    def search(self, val, index = 0):
+
+    def search(self, val, index=0, node=None):
         """
         Searches for the given in the list and return its index.
 
@@ -419,15 +428,18 @@ class AVLTreeList(object):
         @rtype: int
         @returns: The first index that contains val, -1 if not found.
         """
-        if self.isVirtualNode():
+        if node is None:
+            node = self.root
+
+        if node.isVirtualNode():
             return -1
-        left = search(self.left, val, index)
+        left = self.search(val, index, node.left)
         if left != -1:
             return left
-        if self.value == val:
-            return index+ self.left.rank
-        
-        right = search(self.right, val, index+self.left.rank+1)
+        if node.value == val:
+            return index + node.left.rank
+
+        right = self.search(val, index + node.left.rank + 1, node.right)
         return right
 
     def getRoot(self):
@@ -515,7 +527,7 @@ class AVLTreeList(object):
         if node == self.root:
             self.root = new_parent
             new_parent.setParent(None)
-        elif self.isParentRight(node):
+        elif node.isParentRight():
             original_parent.setLeft(new_parent)
         else:
             original_parent.setRight(new_parent)
@@ -563,12 +575,3 @@ class AVLTreeList(object):
             fixes += self.fixNode(node)
             node = node.parent
         return fixes
-
-    def isParentRight(self, node):
-        """
-        Checks if the given node's parent is to its left or right.
-
-        @rtype: bool
-        @returns: True iff the node's parent is to the right of it.
-        """
-        return node.parent is not None and node.parent.left == node

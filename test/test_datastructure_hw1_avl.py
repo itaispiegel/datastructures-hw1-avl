@@ -96,16 +96,16 @@ def test_list_to_array_for_non_empty_list(non_empty_tree: AVLTreeList):
     array = non_empty_tree.listToArray()
     assert array == ["a", "b", "c", "d"]
 
+
 def test_concat_two_trees_for_non_empty_tree(non_empty_tree: AVLTreeList):
     tree2 = AVLTreeList()
-    tree2.insert(0,'e')
-    tree2.insert(1,'f')
-    tree2.insert(2,'g')
-    tree2.insert(3,'h')
+    tree2.insert(0, "e")
+    tree2.insert(1, "f")
+    tree2.insert(2, "g")
+    tree2.insert(3, "h")
     non_empty_tree.concat(tree2)
-    assert non_empty_tree.last() == 'h'
-    assert non_empty_tree.retrieve(3) == 'd'
-    assert non_empty_tree.retrieve(5) == 'f'
+    assert non_empty_tree.last() == "h"
+    assert non_empty_tree.retrieve(3) == "d"
+    assert non_empty_tree.retrieve(5) == "f"
     assert non_empty_tree.root.parent is None
-    assert non_empty_tree.root.value == 'f'
-    
+    assert non_empty_tree.root.value == "f"
