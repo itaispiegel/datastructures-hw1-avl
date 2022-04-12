@@ -209,10 +209,11 @@ class AVLTreeList(object):
         @rtype: str
         @returns: The value of the ith item in the list
         """
-        if index < self.root.rank:
-            node = self.get(index + 1)
-            return node.value
-        return None
+        if index >= self.root.rank:
+            return None
+
+        node = self.get(index + 1)
+        return node.value
 
     def insert(self, index, val):
         """
@@ -226,27 +227,29 @@ class AVLTreeList(object):
         @rtype: list
         @returns: The number of re-balance operation due to AVL re-balancing.
         """
-        if self.empty() and index == 0:
+        fixes = 0
+        if index > self.length():
+            return fixes
+        elif self.empty() and index == 0:
             self.root = AVLNode(val)
-            return 0
+            return fixes
         elif index <= self.length() - 1:
             node = self.get(index + 1)
             if node.left.isVirtualNode():
-                node.left = AVLNode(val, node)
-                node = node.left
+                child = AVLNode(val, node)
+                node.left = child
             else:
-                node = self.getPred(node)
-                node.right = AVLNode(val, node)
-                node = node.right
-            fixes = self.fixup(node)
-            return fixes
+                pred = self.getPred(node)
+                child = AVLNode(val, pred)
+                pred.right = child
+            fixes = self.fixup(child)
         elif index == self.length():
             node = self.get(index)
-            node.right = AVLNode(val, node)
-            fixes = self.fixup(node)
-            return fixes
+            child = AVLNode(val, node)
+            node.right = child
+            fixes = self.fixup(child)
 
-        return -1
+        return fixes
 
     def delete(self, index):
         """

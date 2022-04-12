@@ -15,7 +15,7 @@ def test_inserting_item_to_tree_marks_the_root_as_real(empty_tree: AVLTreeList):
 
 
 def test_insert_item_at_too_large_index_returns_negative_one(empty_tree: AVLTreeList):
-    assert empty_tree.insert(11, "a") == -1
+    assert empty_tree.insert(11, "a") == 0
     assert empty_tree.empty()
 
 
