@@ -117,6 +117,11 @@ def test_concat_two_trees_for_non_empty_tree(small_tree: AVLTreeList):
     tree2.insert(2, "g")
     tree2.insert(3, "h")
     small_tree.concat(tree2)
+
+    expected_tree = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    for i in range(small_tree.length()):
+        assert small_tree.retrieve(i) == expected_tree[i]
+
     assert small_tree.last() == "h"
     assert small_tree.retrieve(3) == "d"
     assert small_tree.retrieve(5) == "f"

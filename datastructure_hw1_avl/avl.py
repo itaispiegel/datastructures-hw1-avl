@@ -455,9 +455,9 @@ class AVLTreeList(object):
 
         while node.parent is not None:
             if node.isParentRight():
-                bigTree.join(AVLTreeList(node.parent.right), node.parent)
+                bigTree.join_with_axis(AVLTreeList(node.parent.right), node.parent)
             else:
-                tempTree = AVLTreeList(node.parent.left).join(smallTree, node.parent)
+                tempTree = AVLTreeList(node.parent.left).join_with_axis(smallTree, node.parent)
                 smallTree = tempTree
             node = node.parent
 
@@ -472,19 +472,19 @@ class AVLTreeList(object):
         @rtype: int
         @returns: the absolute value of the difference between the height of the AVL trees joined
         """
-        original_height_diff = self.root.height - lst.root.height
+        height_diff = self.root.height - lst.root.height
         if lst.empty():
-            return abs(original_height_diff)
+            return abs(height_diff)
         if self.empty():
             self.root = lst.root
-            return abs(original_height_diff)
+            return abs(height_diff)
 
         axis = self.get(self.length())
         self.delete(self.length() - 1)
-        self.join(lst, axis)
-        return abs(original_height_diff)
+        self.join_with_axis(lst, axis)
+        return abs(height_diff)
 
-    def join(self, lst, axis):
+    def join_with_axis(self, lst, axis):
         if lst.empty():
             self.insert(self.length(), axis)
             return
@@ -492,6 +492,7 @@ class AVLTreeList(object):
             lst.insert(0, axis)
             self.root = lst.root
             return
+
         height_diff = self.root.height - lst.root.height
         if height_diff == 0:
             axis.setLeft(self.root)
