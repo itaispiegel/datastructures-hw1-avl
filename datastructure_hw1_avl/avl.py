@@ -516,7 +516,7 @@ class AVLTreeList(object):
 
         self.fixup(axis)
 
-    def search(self, val, index=0, node=None):
+    def search(self, val):
         """
         Searches for the given in the list and return its index.
 
@@ -525,19 +525,29 @@ class AVLTreeList(object):
         @rtype: int
         @returns: The first index that contains val, -1 if not found.
         """
-        if node is None:
-            node = self.root
+        return self._searchRec(val, index=0, node=self.root)
 
-        if node.isVirtualNode():
+    def _searchRec(self, val, index, node):
+        """
+        A utility function to start searching the given value from the given node.
+
+        @type val: str
+        @param val: The value to search in the list.
+        @type index: int
+        @param index: The index to add to the search result.
+        @type node: AVLNode
+        @param node: The node to start the search from.
+        @return: The index of the value, or -1 if not found.
+        """
+        if node is None or node.isVirtualNode():
             return -1
-        left = self.search(val, index, node.left)
+
+        left = self._searchRec(val, index, node.left)
         if left != -1:
             return left
         if node.value == val:
             return index + node.left.rank
-
-        right = self.search(val, index + node.left.rank + 1, node.right)
-        return right
+        return self._searchRec(val, index + node.left.rank + 1, node.right)
 
     def getRoot(self):
         """
