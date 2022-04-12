@@ -1,20 +1,30 @@
 import random
 import string
 from test.conftest import LARGE_TREE_SIZE
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Tuple
 
-from datastructure_hw1_avl.avl import AVLTreeList
+from datastructure_hw1_avl.avl import AVLNode, AVLTreeList
 
 ITERATIONS = 1000
 RANDOM_STRINGS_SIZE = 15
 
-# This random seed causes the bug deterministically :(
-random.seed(19)
+
+def _get_node_with_bad_balance_factor(node: AVLNode) -> Optional[AVLNode]:
+    if node.isVirtualNode():
+        return None
+    left = _get_node_with_bad_balance_factor(node.left)
+    if left is not None:
+        return left
+    if abs(node.balanceFactor) > 2:
+        return node
+    return _get_node_with_bad_balance_factor(node.right)
 
 
 def _test_list_insert(avl_tree: AVLTreeList, equivalent_list: List[str]):
     index = random.randint(0, avl_tree.length())
-    new_item = "".join(random.choices(string.ascii_lowercase + string.digits, k=RANDOM_STRINGS_SIZE))
+    new_item = "".join(
+        random.choices(string.ascii_lowercase + string.digits, k=RANDOM_STRINGS_SIZE)
+    )
     avl_tree.insert(index, new_item)
     equivalent_list.insert(index, new_item)
 
@@ -45,3 +55,6 @@ def test_large_tree(large_tree: AVLTreeList):
         assert (
             equivalent_list == large_tree.listToArray()
         ), f"Failed after {i} iterations at operation: {test_operation.__name__}"
+
+        bad_node = _get_node_with_bad_balance_factor(large_tree.root)
+        assert bad_node is None

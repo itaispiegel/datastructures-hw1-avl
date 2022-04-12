@@ -31,6 +31,44 @@ class AVLNode(object):
             self.rank = 1
             self.height = 0
 
+    def getPredecessor(self):
+        """
+        Returns the predecessor node.
+        Go down left and then all the way down right if there's a left son, otherwise go all the way up right.
+
+        @rtype: AVLNode
+        @returns: The node with index-1, or None if none exist (first item).
+        """
+        node = self
+        if node.left.isRealNode():
+            node = node.left
+            while node.right.isRealNode():
+                node = node.right
+            return node
+        else:
+            while node.parent is not None and node.isParentRight():
+                node = node.parent
+            return node.parent
+
+    def getSuccessor(self):
+        """
+        Returns the successor node.
+        Go down right and then all the way down left if there's a right son, otherwise go all the way up left.
+
+        @rtype: AVLNode
+        @return: The node with the index+1, or None if none exist (last item).
+        """
+        node = self
+        if node.right.isRealNode():
+            node = node.right
+            while node.left.isRealNode():
+                node = node.left
+            return node
+        else:
+            while node.parent is not None and not node.isParentRight():
+                node = node.parent
+            return node.parent
+
     def getLeft(self):
         """
         Returns the left child
@@ -167,6 +205,15 @@ class AVLNode(object):
         """
         return self.parent is not None and self.parent.left == self
 
+    def isLeafNode(self):
+        """
+        Returns whether the current node is a leaf.
+        Note that a node will be considered a leaf iff both of its children are virtual nodes.
+
+        @rtype: bool
+        """
+        return self.left.isVirtualNode() and self.right.isVirtualNode()
+
     @property
     def balanceFactor(self):
         """
@@ -239,7 +286,7 @@ class AVLTreeList(object):
                 child = AVLNode(val, node)
                 node.left = child
             else:
-                pred = self.getPred(node)
+                pred = node.getPredecessor()
                 child = AVLNode(val, pred)
                 pred.right = child
             fixes = self.fixup(child)
@@ -265,27 +312,72 @@ class AVLTreeList(object):
             return -1
 
         node = self.get(index + 1)
-        if node.left.isVirtualNode():
-            node.right.parent = node.parent
-            if node == self.root:
-                self.root = node.right
-                return 0
-            elif node.isParentRight():
-                node.parent.left = node.right
-            else:
-                node.parent.right = node.right
-            fixes = self.fixup(node.parent)
-            return fixes
-
-        pred = self.getPred(node)
-        node.value = pred.value
-        if pred.isParentRight():
-            pred.parent.left = pred.left
+        if node.isLeafNode():
+            return self.delete_leaf_node(node)
+        elif node.left.isVirtualNode() ^ node.right.isVirtualNode():
+            return self.delete_node_with_one_child(node)
         else:
-            pred.parent.right = pred.left
-        pred.left.parent = pred.parent
-        fixes = self.fixup(pred.parent)
-        return fixes
+            return self.delete_node_with_two_children(node)
+
+    def delete_leaf_node(self, node):
+        """
+        Delete the given node, while assuming it's a leaf node.
+        Simply deletes the node, and replaces it with a virtual node.
+
+        @type node: AVLNode
+        @param node: The node to delete.
+        @rtype: int
+        @return: The number of fix operations done.
+        """
+        parent = node.parent
+        node.parent = None
+        if parent is None:
+            self.root = AVLNode()
+        elif parent.left == node:
+            parent.left = AVLNode(parent=parent)
+        else:
+            parent.right = AVLNode(parent=parent)
+        return self.fixup(parent)
+
+    def delete_node_with_one_child(self, node):
+        """
+        Delete the given node, while assuming it has one child, by setting the node to its single child.
+
+        @type node: AVLNode
+        @param node: The node to delete.
+        @rtype: int
+        @return: The number of fix operations done.
+        """
+        parent = node.parent
+        child = node.left if node.left.isRealNode() else node.right
+        child.parent = parent
+        node.parent = None
+
+        if parent is None:
+            self.root = child
+        elif parent.left == node:
+            parent.left = child
+        else:
+            parent.right = child
+
+        return self.fixup(parent)
+
+    def delete_node_with_two_children(self, node):
+        """
+        Delete the given node, while assuming it has two children.
+        Finds the successor of the node, which we know doesn't have a left child, and handles it according to the two
+        previous cases.
+
+        @type node: AVLNode
+        @param node: The node to delete.
+        @rtype: int
+        @return: The number of fix operations done.
+        """
+        successor = node.getSuccessor()
+        node.value = successor.value
+        if successor.right.isRealNode():
+            return self.delete_node_with_one_child(successor)
+        return self.delete_leaf_node(successor)
 
     def first(self):
         """
@@ -472,22 +564,6 @@ class AVLTreeList(object):
                 node = node.right
         return node
 
-    def getPred(self, node):
-        """
-        Returns the predecessor node.
-        @rtype: AVLNode
-        @returns: The node with index - 1, or None if none exist (first item).
-        """
-        if node.left.isRealNode():
-            node = node.left
-            while node.right.isRealNode():
-                node = node.right
-            return node
-        else:
-            while node.parent is not None and node.isParentRight():
-                node = node.parent
-            return node.parent
-
     def rightRotation(self, node):
         """
         Performs a right rotation around the given node.
@@ -544,7 +620,7 @@ class AVLTreeList(object):
         """
         updates = node.update()
         if node.balanceFactor == 2:
-            if node.left.balanceFactor == 1:
+            if node.left.balanceFactor >= 0:
                 self.rightRotation(node)
                 return 1
             else:
@@ -552,7 +628,7 @@ class AVLTreeList(object):
                 self.rightRotation(node)
                 return 2
         elif node.balanceFactor == -2:
-            if node.right.balanceFactor == -1:
+            if node.right.balanceFactor <= 0:
                 self.leftRotation(node)
                 return 1
             else:

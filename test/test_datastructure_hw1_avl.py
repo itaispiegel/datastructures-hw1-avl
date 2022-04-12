@@ -69,6 +69,15 @@ def test_retrieve_items_after_delete_from_large_tree(large_tree: AVLTreeList):
         assert large_tree.retrieve(i) == str(i + 1)
 
 
+def test_delete_when_there_is_only_a_leaf_node(empty_tree: AVLTreeList):
+    empty_tree.insert(0, "a")
+    assert empty_tree.retrieve(0) == "a"
+    empty_tree.delete(0)
+    assert empty_tree.empty()
+    empty_tree.insert(0, "b")
+    assert empty_tree.retrieve(0) == "b"
+
+
 def test_get_first_and_last_on_empty_tree(empty_tree: AVLTreeList):
     assert empty_tree.first() is None
     assert empty_tree.last() is None
