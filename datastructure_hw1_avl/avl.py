@@ -235,6 +235,7 @@ class AVLTreeList(object):
     def __init__(self, root=None):
         """Constructor, you are allowed to add more fields."""
         self.root = root or AVLNode()
+        self.root.parent = None
         # add your fields here
 
     def empty(self):
@@ -452,14 +453,22 @@ class AVLTreeList(object):
         val = node.value
         smallTree = AVLTreeList(node.left)
         bigTree = AVLTreeList(node.right)
-
+        nodelist = []
+        sidelist = []
         while node.parent is not None:
-            if node.isParentRight():
-                bigTree.join_with_axis(AVLTreeList(node.parent.right), node.parent)
-            else:
-                tempTree = AVLTreeList(node.parent.left).join_with_axis(smallTree, node.parent)
-                smallTree = tempTree
+            nodelist.append(node.parent)
+            sidelist.append(node.isParentRight())
             node = node.parent
+        for i in range(len(nodelist)):
+            
+            node = nodelist[i]
+            node.parent = None
+            if sidelist[i]:
+                bigTree.join_with_axis(AVLTreeList(node.right), node)
+            else:
+                tempTree = AVLTreeList(node.left)
+                tempTree.join_with_axis(smallTree, node)
+                smallTree = tempTree
 
         return [smallTree, val, bigTree]
 
@@ -486,10 +495,10 @@ class AVLTreeList(object):
 
     def join_with_axis(self, lst, axis):
         if lst.empty():
-            self.insert(self.length(), axis)
+            self.insert(self.length(), axis.value)
             return
         elif self.empty():
-            lst.insert(0, axis)
+            lst.insert(0, axis.value)
             self.root = lst.root
             return
 
@@ -513,7 +522,6 @@ class AVLTreeList(object):
             axis.setRight(lst.root)
             node.parent.setRight(axis)
             axis.setLeft(node)
-
         self.fixup(axis)
 
     def search(self, val):

@@ -127,3 +127,11 @@ def test_concat_two_trees_for_non_empty_tree(small_tree: AVLTreeList):
     assert small_tree.retrieve(5) == "f"
     assert small_tree.root.parent is None
     assert small_tree.root.value == "f"
+
+def test_split_large_tree(large_tree:AVLTreeList):
+    array = large_tree.listToArray()
+    index = 120
+    result = large_tree.split(index)
+    assert result[0].listToArray() == array[0:index]
+    assert result[1] == array[index]
+    assert result[2].listToArray() == array[index+1:]

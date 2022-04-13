@@ -83,3 +83,21 @@ def test_large_tree(large_tree: AVLTreeList):
 
         bad_node = _get_node_with_bad_balance_factor(large_tree.root)
         assert bad_node is None
+
+def test_large_tree_split(large_tree: AVLTreeList):
+    equivalent_list = list(str(i) for i in range(LARGE_TREE_SIZE))
+    lst = [[],[]]    
+    while len(equivalent_list)>1:
+        index = random.randint(0,len(equivalent_list)-1)
+        lst[0] = equivalent_list[0:index]
+        lst[1] = equivalent_list[index+1:]
+        result = large_tree.split(index)
+        assert result[0].listToArray() == lst[0]
+        assert result[1] == equivalent_list[index]
+        assert result[2].listToArray() == lst[1]
+        if random.randrange(2):
+            equivalent_list = lst[0]
+            large_tree = result[0]
+        else:
+            equivalent_list = lst[1]
+            large_tree = result[2]
