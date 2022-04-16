@@ -236,7 +236,7 @@ class AVLTreeList(object):
         """Constructor, you are allowed to add more fields."""
         self.root = root or AVLNode()
         self.root.parent = None
-        # add your fields here
+        self.first_node = self.last_node = self.root
 
     def empty(self):
         """
@@ -280,7 +280,7 @@ class AVLTreeList(object):
             return fixes
         elif self.empty() and index == 0:
             self.root = AVLNode(val)
-            return fixes
+            self.first_node = self.last_node = self.root
         elif index <= self.length() - 1:
             node = self.get(index + 1)
             if node.left.isVirtualNode():
@@ -291,11 +291,14 @@ class AVLTreeList(object):
                 child = AVLNode(val, pred)
                 pred.right = child
             fixes = self.fixup(child)
+            if index == 0:
+                self.first_node = child
         elif index == self.length():
             node = self.get(index)
             child = AVLNode(val, node)
             node.right = child
             fixes = self.fixup(child)
+            self.last_node = child
 
         return fixes
 
@@ -334,10 +337,15 @@ class AVLTreeList(object):
         node.parent = None
         if parent is None:
             self.root = AVLNode()
+            self.first_node = self.last_node = self.root
         elif parent.left == node:
             parent.left = AVLNode(parent=parent)
+            if self.first_node == node:
+                self.first_node = parent
         else:
             parent.right = AVLNode(parent=parent)
+            if self.last_node == node:
+                self.last_node = parent
         return self.fixup(parent)
 
     def delete_node_with_one_child(self, node):
@@ -350,7 +358,15 @@ class AVLTreeList(object):
         @return: The number of fix operations done.
         """
         parent = node.parent
-        child = node.left if node.left.isRealNode() else node.right
+        if node.left.isRealNode():
+            child = node.left
+            if self.last_node == node:
+                self.last_node = child
+        else:
+            child = node.right
+            if self.first_node == node:
+                self.first_node = child
+
         child.parent = parent
         node.parent = None
 
@@ -387,10 +403,7 @@ class AVLTreeList(object):
         @rtype: str
         @returns: The value of the first item, None if the list is empty
         """
-        node = self.root
-        while node.isRealNode() and node.left.isRealNode():
-            node = node.left
-        return node.value
+        return self.first_node.value if self.first_node.isRealNode() else None
 
     def last(self):
         """
@@ -399,10 +412,7 @@ class AVLTreeList(object):
         @rtype: str
         @returns: The value of the last item, None if the list is empty
         """
-        node = self.root
-        while node.isRealNode() and node.right.isRealNode():
-            node = node.right
-        return node.value
+        return self.last_node.value if self.last_node.isRealNode() else None
 
     def listToArray(self):
         """
@@ -460,7 +470,7 @@ class AVLTreeList(object):
             sidelist.append(node.isParentRight())
             node = node.parent
         for i in range(len(nodelist)):
-            
+
             node = nodelist[i]
             node.parent = None
             if sidelist[i]:
@@ -486,6 +496,7 @@ class AVLTreeList(object):
             return abs(height_diff)
         if self.empty():
             self.root = lst.root
+            self.first_node, self.last_node = lst.first_node, lst.last_node
             return abs(height_diff)
 
         axis = self.get(self.length())
@@ -496,10 +507,12 @@ class AVLTreeList(object):
     def join_with_axis(self, lst, axis):
         if lst.empty():
             self.insert(self.length(), axis.value)
+            self.last_node = self.get(self.length())
             return
         elif self.empty():
             lst.insert(0, axis.value)
             self.root = lst.root
+            self.first_node, self.last_node = lst.first_node, lst.last_node
             return
 
         height_diff = self.root.height - lst.root.height
@@ -522,6 +535,7 @@ class AVLTreeList(object):
             axis.setRight(lst.root)
             node.parent.setRight(axis)
             axis.setLeft(node)
+        self.last_node = lst.last_node
         self.fixup(axis)
 
     def search(self, val):

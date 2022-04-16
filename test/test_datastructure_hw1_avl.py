@@ -128,10 +128,36 @@ def test_concat_two_trees_for_non_empty_tree(small_tree: AVLTreeList):
     assert small_tree.root.parent is None
     assert small_tree.root.value == "f"
 
-def test_split_large_tree(large_tree:AVLTreeList):
+
+def test_split_large_tree(large_tree: AVLTreeList):
     array = large_tree.listToArray()
     index = 120
     result = large_tree.split(index)
     assert result[0].listToArray() == array[0:index]
     assert result[1] == array[index]
-    assert result[2].listToArray() == array[index+1:]
+    assert result[2].listToArray() == array[index + 1 :]
+
+
+def test_concat_with_empty_list_does_not_change_first_and_last(large_tree: AVLTreeList, empty_tree: AVLTreeList):
+    first, last = large_tree.first(), large_tree.last()
+    large_tree.concat(empty_tree)
+    assert large_tree.first() == first
+    assert large_tree.last() == last
+
+
+def test_concat_when_current_list_is_empty(empty_tree: AVLTreeList, small_tree: AVLTreeList):
+    first, last = small_tree.first(), small_tree.last()
+    empty_tree.concat(small_tree)
+    assert empty_tree.first() == first
+    assert empty_tree.last() == last
+
+
+def test_concat_with_singleton_list_changes_only_last_item(large_tree: AVLTreeList):
+    val = "NEW_ITEM"
+    singleton_list = AVLTreeList()
+    singleton_list.insert(0, val)
+
+    first = large_tree.first()
+    large_tree.concat(singleton_list)
+    assert large_tree.first() == first
+    assert large_tree.last() == val
