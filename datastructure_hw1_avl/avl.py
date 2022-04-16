@@ -474,10 +474,10 @@ class AVLTreeList(object):
             node = nodelist[i]
             node.parent = None
             if sidelist[i]:
-                bigTree.join_with_axis(AVLTreeList(node.right), node)
+                bigTree.concatWithAxis(AVLTreeList(node.right), node)
             else:
                 tempTree = AVLTreeList(node.left)
-                tempTree.join_with_axis(smallTree, node)
+                tempTree.concatWithAxis(smallTree, node)
                 smallTree = tempTree
 
         return [smallTree, val, bigTree]
@@ -501,10 +501,18 @@ class AVLTreeList(object):
 
         axis = self.get(self.length())
         self.delete(self.length() - 1)
-        self.join_with_axis(lst, axis)
+        self.concatWithAxis(lst, axis)
         return abs(height_diff)
 
-    def join_with_axis(self, lst, axis):
+    def concatWithAxis(self, lst, axis):
+        """
+        Concatenates the lst to self with the given axis value.
+
+        @type lst: AVLTreeList
+        @param lst: The list to concatenate to self.
+        @type axis: AVLNode
+        @param axis: The axis node to concatenate with.
+        """
         if lst.empty():
             self.insert(self.length(), axis.value)
             self.last_node = self.get(self.length())
