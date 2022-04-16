@@ -536,6 +536,7 @@ class AVLTreeList(object):
         @type axis: AVLNode
         @param axis: The axis node to concatenate with.
         """
+        height_diff = self.root.height - lst.root.height
         if lst.empty():
             self.insert(self.length(), axis.value)
             self.last_node = self.get(self.length())
@@ -545,9 +546,7 @@ class AVLTreeList(object):
             self.root = lst.root
             self.first_node, self.last_node = lst.first_node, lst.last_node
             return
-
-        height_diff = self.root.height - lst.root.height
-        if height_diff == 0:
+        elif height_diff == 0:
             axis.setLeft(self.root)
             axis.setRight(lst.root)
             self.root = axis
@@ -568,6 +567,7 @@ class AVLTreeList(object):
             axis.setLeft(node)
         self.last_node = lst.last_node
         self.fixup(axis)
+        return abs(height_diff)
 
     def search(self, val):
         """
