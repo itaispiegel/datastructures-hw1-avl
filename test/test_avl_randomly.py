@@ -92,7 +92,7 @@ def test_large_tree(large_tree: AVLTreeList):
 
 def test_large_tree_split(large_tree: AVLTreeList):
     equivalent_list = list(str(i) for i in range(LARGE_TREE_SIZE))
-    lst = [[], []]
+    lst: List = [[], []]
     while len(equivalent_list) > 1:
         index = random.randint(0, len(equivalent_list) - 1)
         lst[0] = equivalent_list[0:index]

@@ -232,10 +232,19 @@ class AVLTreeList(object):
     A class implementing the ADT list, using an AVL tree.
     """
 
-    def __init__(self, root=None):
-        """Constructor, you are allowed to add more fields."""
+    def __init__(self, root=None, remove_parent_from_root=False):
+        """
+        Constructor, you are allowed to add more fields.
+
+        @type root: AVLNode
+        @param root: The root of this new tree list.
+        @type remove_parent_from_root: bool
+        @param remove_parent_from_root: Whether to set the parent of the root as None. Setting this flag to True might
+        have side effects on the passed node.
+        """
         self.root = root or AVLNode()
-        self.root.parent = None
+        if remove_parent_from_root:
+            self.root.parent = None
         self.first_node = self.last_node = self.root
 
     def empty(self):
@@ -461,26 +470,28 @@ class AVLTreeList(object):
         """
         node = self.get(index + 1)
         val = node.value
-        smallTree = AVLTreeList(node.left)
-        bigTree = AVLTreeList(node.right)
-        nodelist = []
-        sidelist = []
+
+        small_tree = AVLTreeList(node.left, remove_parent_from_root=True)
+        large_tree = AVLTreeList(node.right, remove_parent_from_root=True)
+
+        nodes_list, sides_list = [], []
         while node.parent is not None:
-            nodelist.append(node.parent)
-            sidelist.append(node.isParentRight())
+            nodes_list.append(node.parent)
+            sides_list.append(node.isParentRight())
             node = node.parent
-        for i in range(len(nodelist)):
 
-            node = nodelist[i]
+        for i, node in enumerate(nodes_list):
             node.parent = None
-            if sidelist[i]:
-                bigTree.concatWithAxis(AVLTreeList(node.right), node)
+            if sides_list[i]:
+                large_tree.concatWithAxis(
+                    AVLTreeList(node.right, remove_parent_from_root=True), node
+                )
             else:
-                tempTree = AVLTreeList(node.left)
-                tempTree.concatWithAxis(smallTree, node)
-                smallTree = tempTree
+                temp_tree = AVLTreeList(node.left, remove_parent_from_root=True)
+                temp_tree.concatWithAxis(small_tree, node)
+                small_tree = temp_tree
 
-        return [smallTree, val, bigTree]
+        return [small_tree, val, large_tree]
 
     def concat(self, lst):
         """
