@@ -214,6 +214,18 @@ class AVLNode(object):
         """
         return self.left.isVirtualNode() and self.right.isVirtualNode()
 
+    def depth(self):
+        """
+        Returns the depth of the current node, by going all the way up to the root and counting the nodes in the path.
+
+        @rtype: int
+        """
+        count, node = 0, self
+        while node.parent is not None:
+            count += 1
+            node = node.parent
+        return count
+
     @property
     def balanceFactor(self):
         """
@@ -281,7 +293,7 @@ class AVLTreeList(object):
         @param index: The intended index in the list to which we insert val
         @type val: str
         @param val: the inserted value
-        @rtype: list
+        @rtype: int
         @returns: The number of re-balance operation due to AVL re-balancing.
         """
         fixes = 0
