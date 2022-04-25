@@ -1,8 +1,8 @@
-# username - complete info
-# id1      - complete info
-# name1    - complete info
-# id2      - complete info
-# name2    - complete info
+# username - itaispiegel
+# id1      - 206781569
+# name1    - Itai Spiegel
+# id2      - 322573007
+# name2    - Oren Shacham
 
 
 class AVLNode(object):
