@@ -1,8 +1,9 @@
+from datastructure_hw1_avl.theoretical_task.utils import create_tree_from_list
 from test.conftest import LARGE_TREE_SIZE
 
 import pytest
 
-from datastructure_hw1_avl.avl import AVLTreeList
+from datastructure_hw1_avl.avl import AVLTreeList, AVLNode
 
 
 def test_empty_tree_root_is_virtual(empty_tree: AVLTreeList):
@@ -161,3 +162,12 @@ def test_concat_with_singleton_list_changes_only_last_item(large_tree: AVLTreeLi
     large_tree.concat(singleton_list)
     assert large_tree.first() == first
     assert large_tree.last() == val
+
+
+def test_concat_with_axis_when_heights_are_equal():
+    tree1 = create_tree_from_list(["a", "b", "c", "d", "e"])
+    tree2 = create_tree_from_list(["1", "2", "3", "4", "5"])
+    tree1.concatWithAxis(tree2, AVLNode("axis"))
+
+    assert tree1.first() == "a"
+    assert tree1.last() == "5"
