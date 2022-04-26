@@ -263,19 +263,14 @@ class AVLTreeList(object):
     A class implementing the ADT list, using an AVL tree.
     """
 
-    def __init__(self, root=None, remove_parent_from_root=False):
+    def __init__(self, root=None):
         """
         Constructor, you are allowed to add more fields.
 
         @type root: AVLNode
         @param root: The root of this new tree list.
-        @type remove_parent_from_root: bool
-        @param remove_parent_from_root: Whether to set the parent of the root as None. Setting this flag to True might
-        have side effects on the passed node.
         """
         self.root = root or AVLNode()
-        if remove_parent_from_root:
-            self.root.parent = None
         self.first_node = self.last_node = self.root
 
     def empty(self):
@@ -515,8 +510,9 @@ class AVLTreeList(object):
         node = self.get(index + 1)
         val = node.value
 
-        small_tree = AVLTreeList(node.left, remove_parent_from_root=True)
-        large_tree = AVLTreeList(node.right, remove_parent_from_root=True)
+        node.left.parent = node.right.parent = None
+        small_tree = AVLTreeList(node.left)
+        large_tree = AVLTreeList(node.right)
 
         nodes_list, sides_list = [], []
         while node.parent is not None:
@@ -527,11 +523,13 @@ class AVLTreeList(object):
         for i, node in enumerate(nodes_list):
             node.parent = None
             if sides_list[i]:
+                node.right.parent = None
                 large_tree.concatWithAxis(
-                    AVLTreeList(node.right, remove_parent_from_root=True), node
+                    AVLTreeList(node.right), node
                 )
             else:
-                temp_tree = AVLTreeList(node.left, remove_parent_from_root=True)
+                node.left.parent = None
+                temp_tree = AVLTreeList(node.left)
                 temp_tree.concatWithAxis(small_tree, node)
                 small_tree = temp_tree
 
