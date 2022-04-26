@@ -15,7 +15,7 @@ class AVLNode(object):
         @type value: Optional[str]
         @param value: Optional data for the node. If None, then the node will be considered virtual.
         @type parent: AVLNode
-        @param parent: The parent node to set.
+        @param parent: The parent node to set. Will only be considered if the node is real, hence a value is passed.
         """
         self.value = value
         self.parent = parent
