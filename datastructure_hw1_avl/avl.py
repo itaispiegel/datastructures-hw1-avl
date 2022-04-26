@@ -253,9 +253,9 @@ class AVLNode(object):
         @rtype: int
         @returns: The node's balance factor.
         """
-        left_height = getattr(self.left, "height", 0)
-        right_height = getattr(self.right, "height", 0)
-        return left_height - right_height
+        if self.isVirtualNode():
+            return 0
+        return self.left.height - self.right.height
 
 
 class AVLTreeList(object):
