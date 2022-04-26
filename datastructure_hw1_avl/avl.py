@@ -1,8 +1,8 @@
-# username - complete info
-# id1      - complete info
-# name1    - complete info
-# id2      - complete info
-# name2    - complete info
+# username - itaispiegel
+# id1      - 206781569
+# name1    - Itai Spiegel
+# id2      - 322573007
+# name2    - Oren Shacham
 
 
 class AVLNode(object):
@@ -35,6 +35,7 @@ class AVLNode(object):
         """
         Returns the predecessor node.
         Go down left and then all the way down right if there's a left son, otherwise go all the way up right.
+        Complexity: O(log(n)) worst case and O(1) amortized.
 
         @rtype: AVLNode
         @returns: The node with index-1, or None if none exist (first item).
@@ -54,6 +55,7 @@ class AVLNode(object):
         """
         Returns the successor node.
         Go down right and then all the way down left if there's a right son, otherwise go all the way up left.
+        Complexity: O(log(n)) worst case and O(1) amortized.
 
         @rtype: AVLNode
         @return: The node with the index+1, or None if none exist (last item).
@@ -71,7 +73,8 @@ class AVLNode(object):
 
     def getLeft(self):
         """
-        Returns the left child
+        Returns the left child.
+        Complexity: O(1).
 
         @rtype: AVLNode
         @returns: The left child of self, None if there is no left child
@@ -82,7 +85,8 @@ class AVLNode(object):
 
     def getRight(self):
         """
-        Returns the right child
+        Returns the right child.
+        Complexity: O(1).
 
         @rtype: AVLNode
         @returns: The right child of self, None if there is no right child
@@ -93,7 +97,8 @@ class AVLNode(object):
 
     def getParent(self):
         """
-        Returns the parent
+        Returns the parent.
+        Complexity: O(1).
 
         @rtype: AVLNode
         @returns: The parent of self, None if there is no parent
@@ -102,7 +107,8 @@ class AVLNode(object):
 
     def getValue(self):
         """
-        Return the value
+        Return the value.
+        Complexity: O(1).
 
         @rtype: str
         @returns: The value of self, None if the node is virtual
@@ -111,7 +117,8 @@ class AVLNode(object):
 
     def getHeight(self):
         """
-        Returns the height
+        Returns the height.
+        Complexity: O(1).
 
         @rtype: int
         @returns: The height of self, -1 if the node is virtual
@@ -120,7 +127,8 @@ class AVLNode(object):
 
     def setLeft(self, node):
         """
-        Sets left child
+        Sets left child.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: a node
@@ -130,7 +138,8 @@ class AVLNode(object):
 
     def setRight(self, node):
         """
-        Sets right child
+        Sets right child.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: a node
@@ -140,7 +149,8 @@ class AVLNode(object):
 
     def setParent(self, node):
         """
-        Sets parent
+        Sets parent.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: a node
@@ -149,7 +159,8 @@ class AVLNode(object):
 
     def setValue(self, value):
         """
-        Sets value
+        Sets value.
+        Complexity: O(1).
 
         @type value: str
         @param value: data
@@ -158,7 +169,8 @@ class AVLNode(object):
 
     def setHeight(self, h):
         """
-        Sets the height of the node
+        Sets the height of the node.
+        Complexity: O(1).
 
         @type h: int
         @param h: the height
@@ -167,7 +179,8 @@ class AVLNode(object):
 
     def isRealNode(self):
         """
-        Returns whether self is a real node
+        Returns whether self is a real node.
+        Complexity: O(1).
 
         @rtype: bool
         @returns: True iff self is a real node.
@@ -176,7 +189,8 @@ class AVLNode(object):
 
     def isVirtualNode(self):
         """
-        Returns whether self is a virtual node
+        Returns whether self is a virtual node.
+        Complexity: O(1).
 
         @rtype: bool
         @returns: True iff self is a virtual node.
@@ -186,6 +200,7 @@ class AVLNode(object):
     def update(self):
         """
         Update the node's fields from its children.
+        Complexity: O(1).
 
         @rtype: node
         @returns: None
@@ -199,6 +214,7 @@ class AVLNode(object):
     def isParentRight(self):
         """
         Checks if the given node's parent is to its left or right.
+        Complexity: O(1).
 
         @rtype: bool
         @returns: True iff the node's parent is to the right of it.
@@ -209,6 +225,7 @@ class AVLNode(object):
         """
         Returns whether the current node is a leaf.
         Note that a node will be considered a leaf iff both of its children are virtual nodes.
+        Complexity: O(1).
 
         @rtype: bool
         """
@@ -217,6 +234,7 @@ class AVLNode(object):
     def depth(self):
         """
         Returns the depth of the current node, by going all the way up to the root and counting the nodes in the path.
+        Complexity: O(log(n)).
 
         @rtype: int
         """
@@ -230,6 +248,7 @@ class AVLNode(object):
     def balanceFactor(self):
         """
         Returns the balance factor of the given node, which is the difference in height of the left node and the right.
+        Complexity: O(1).
 
         @rtype: int
         @returns: The node's balance factor.
@@ -261,7 +280,8 @@ class AVLTreeList(object):
 
     def empty(self):
         """
-        Returns whether the list is empty
+        Returns whether the list is empty.
+        Complexity: O(1).
 
         @rtype: bool
         @returns: True if the list is empty, False otherwise
@@ -270,7 +290,8 @@ class AVLTreeList(object):
 
     def retrieve(self, index):
         """
-        Retrieves the value of the ith item in the list
+        Retrieves the value of the ith item in the list.
+        Complexity: O(log(n)).
 
         @type index: int
         @pre: 0 <= index < self.length()
@@ -286,7 +307,8 @@ class AVLTreeList(object):
 
     def insert(self, index, val):
         """
-        Inserts val at position i in the list
+        Inserts val at position i in the list.
+        Complexity: O(log(n)).
 
         @type index: int
         @pre: 0 <= index <= self.length()
@@ -325,7 +347,8 @@ class AVLTreeList(object):
 
     def delete(self, index):
         """
-        Deletes the ith item in the list
+        Deletes the ith item in the list.
+        Complexity: O(log(n)).
 
         @type index: int
         @pre: 0 <= index < self.length()
@@ -348,6 +371,7 @@ class AVLTreeList(object):
         """
         Delete the given node, while assuming it's a leaf node.
         Simply deletes the node, and replaces it with a virtual node.
+        Complexity: O(log(n)).
 
         @type node: AVLNode
         @param node: The node to delete.
@@ -372,6 +396,7 @@ class AVLTreeList(object):
     def delete_node_with_one_child(self, node):
         """
         Delete the given node, while assuming it has one child, by setting the node to its single child.
+        Complexity: O(log(n)).
 
         @type node: AVLNode
         @param node: The node to delete.
@@ -405,6 +430,7 @@ class AVLTreeList(object):
         Delete the given node, while assuming it has two children.
         Finds the successor of the node, which we know doesn't have a left child, and handles it according to the two
         previous cases.
+        Complexity: O(log(n)).
 
         @type node: AVLNode
         @param node: The node to delete.
@@ -419,7 +445,8 @@ class AVLTreeList(object):
 
     def first(self):
         """
-        Returns the value of the first item in the list
+        Returns the value of the first item in the list.
+        Complexity: O(1).
 
         @rtype: str
         @returns: The value of the first item, None if the list is empty
@@ -428,7 +455,8 @@ class AVLTreeList(object):
 
     def last(self):
         """
-        Returns the value of the last item in the list
+        Returns the value of the last item in the list.
+        Complexity: O(1).
 
         @rtype: str
         @returns: The value of the last item, None if the list is empty
@@ -437,7 +465,8 @@ class AVLTreeList(object):
 
     def listToArray(self):
         """
-        Returns an array representing list
+        Returns an array representing list.
+        Complexity: O(n).
 
         @rtype: list
         @returns: a list of strings representing the data structure
@@ -449,6 +478,7 @@ class AVLTreeList(object):
     def _listToArrayRec(self, node, lst):
         """
         An internal function that traverses the tree inorder, and adds all node values to the given list.
+        Complexity: O(n).
 
         @type node: AVLNode
         @param node: The node to start the inorder traversal from.
@@ -462,7 +492,8 @@ class AVLTreeList(object):
 
     def length(self):
         """
-        Returns the size of the list
+        Returns the size of the list.
+        Complexity: O(1).
 
         @rtype: int
         @returns: the size of the list
@@ -472,6 +503,7 @@ class AVLTreeList(object):
     def split(self, index):
         """
         Splits the list at the ith index.
+        Complexity: O(log(n)).
 
         @type index: int
         @pre: 0 <= i < self.length()
@@ -507,7 +539,8 @@ class AVLTreeList(object):
 
     def concat(self, lst):
         """
-        Concatenates lst to self
+        Concatenates lst to self.
+        Complexity: O(log(n)).
 
         @type lst: AVLTreeList
         @param lst: a list to be concatenated after self
@@ -530,6 +563,7 @@ class AVLTreeList(object):
     def concatWithAxis(self, lst, axis):
         """
         Concatenates the lst to self with the given axis value.
+        Complexity: O(log(n)).
 
         @type lst: AVLTreeList
         @param lst: The list to concatenate to self.
@@ -572,6 +606,7 @@ class AVLTreeList(object):
     def search(self, val):
         """
         Searches for the given in the list and return its index.
+        Complexity: O(n).
 
         @type val: str
         @param val: A value to be searched
@@ -583,6 +618,7 @@ class AVLTreeList(object):
     def _searchRec(self, val, index, node):
         """
         A utility function to start searching the given value from the given node.
+        Complexity: O(n).
 
         @type val: str
         @param val: The value to search in the list.
@@ -605,6 +641,7 @@ class AVLTreeList(object):
     def getRoot(self):
         """
         Returns the root of the tree representing the list.
+        Complexity: O(1).
 
         @rtype: AVLNode
         @returns: The root, None if the list is empty.
@@ -614,6 +651,8 @@ class AVLTreeList(object):
     def get(self, index):
         """
         Returns a pointer to the ith node (starts with index 1).
+        Complexity: O(log(n)).
+
         @rtype: AVLNode
         @returns: The ith node, or None if the tree is smaller
         """
@@ -631,6 +670,7 @@ class AVLTreeList(object):
     def rightRotation(self, node):
         """
         Performs a right rotation around the given node.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: The node to rotate around.
@@ -654,6 +694,7 @@ class AVLTreeList(object):
     def leftRotation(self, node):
         """
         Performs a left rotation around the given node.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: The node to rotate around.
@@ -677,6 +718,7 @@ class AVLTreeList(object):
     def fixNode(self, node):
         """
         Fixes the single given node, and returns the number of operations done.
+        Complexity: O(1).
 
         @type node: AVLNode
         @param node: The node to fixup.
@@ -705,6 +747,7 @@ class AVLTreeList(object):
         """
         Goes up the tree from a given node after insertion or deletion and makes the required rotation actions to
         maintain the balance of the tree, and then returns how many rotations were done.
+        Complexity: O(log(n)).
 
         @rtype: int
         @returns: Number of operations done.
